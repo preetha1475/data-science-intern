@@ -1,0 +1,141 @@
+exploration, analysis, and visualization.
+
+1. Overview of Columns
+Each column in the Titanic dataset provides specific information:
+
+PassengerId: A unique identifier for each passenger.
+Survived: Survival status (1 = survived, 0 = did not survive).
+Pclass: Passenger class (1 = first class, 2 = second class, 3 = third class).
+Name: Full name of the passenger.
+Sex: Gender of the passenger.
+Age: Age of the passenger.
+SibSp: Number of siblings or spouses aboard.
+Parch: Number of parents or children aboard.
+Ticket: Ticket number.
+Fare: Fare paid for the ticket.
+Cabin: Cabin number (often missing or incomplete).
+Embarked: Port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
+2. Exploring the Data
+# Display the first few rows of the dataset
+data.head()
+
+# Get a summary of the dataset
+data.info()
+
+# Summary statistics for all columns
+data.describe(include='all')
+.head() shows the first five rows of the data.
+.info() gives a summary of the data, including non-null counts and types.
+.describe() provides summary statistics (mean, min, max, etc.) for numeric columns.
+3. Check for Missing Values
+Missing values can affect analysis, so it’s important to identify them:
+
+# Check for missing values
+data.isnull().sum()
+4. Analyze Survival Rates
+a. Overall Survival Rate
+
+# Calculate the overall survival rate
+survival_rate = data['Survived'].mean()
+print(f"Overall survival rate: {survival_rate:.2f}")
+This will show the percentage of passengers who survived.
+
+b. Survival Rate by Gender
+
+# Survival rate by gender
+survival_rate_by_gender = data.groupby('Sex')['Survived'].mean()
+print(survival_rate_by_gender)
+This will help identify whether gender had an influence on survival.
+
+c. Survival Rate by Passenger Class
+python
+Copy code
+# Survival rate by passenger class
+survival_rate_by_pclass = data.groupby('Pclass')['Survived'].mean()
+print(survival_rate_by_pclass)
+This shows survival rates based on the passenger class (1st, 2nd, or 3rd).
+
+5. Visualize the Data
+Visualizing data helps to identify patterns more easily.
+
+a. Survival Rate by Passenger Class
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set the style of the visualizations
+sns.set(style="whitegrid")
+
+# Bar plot for survival rate by passenger class
+plt.figure(figsize=(8, 6))
+sns.barplot(x='Pclass', y='Survived', data=data)
+plt.title('Survival Rate by Passenger Class')
+plt.xlabel('Passenger Class')
+plt.ylabel('Survival Rate')
+plt.show()
+This bar plot shows the survival rate for each class, making it clear how class affected survival.
+
+b. Survival Rate by Gender
+
+# Bar plot for survival rate by gender
+plt.figure(figsize=(8, 6))
+sns.barplot(x='Sex', y='Survived', data=data)
+plt.title('Survival Rate by Gender')
+plt.xlabel('Gender')
+plt.ylabel('Survival Rate')
+plt.show()
+This bar plot shows the survival rate based on gender, making gender differences clear.
+
+c. Age Distribution of Survivors vs Non-Survivors
+
+# Histogram for age distribution
+plt.figure(figsize=(10, 6))
+sns.histplot(data[data['Survived'] == 1]['Age'].dropna(), kde=True, color='blue', label='Survived')
+sns.histplot(data[data['Survived'] == 0]['Age'].dropna(), kde=True, color='red', label='Did not survive')
+plt.title('Age Distribution of Survivors vs Non-Survivors')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.legend()
+plt.show()
+This histogram compares the age distributions of survivors and non-survivors, showing age as a factor in survival.
+
+d. Correlation Matrix Heatmap
+
+# Correlation matrix
+plt.figure(figsize=(10, 8))
+correlation_matrix = data.corr()
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.show()
+The heatmap shows the correlations between various numerical features (e.g., Fare, Age, SibSp). Darker colors indicate stronger correlations.
+
+6. Advanced Analysis
+a. Survival Rate by Family Size
+
+# Create a new column for family size
+data['FamilySize'] = data['SibSp'] + data['Parch'] + 1  # +1 to include the person themselves
+
+# Survival rate by family size
+survival_by_family_size = data.groupby('FamilySize')['Survived'].mean()
+print(survival_by_family_size)
+Here, family size is calculated by combining the number of siblings/spouses and parents/children on board. The survival rate is then computed based on family size.
+
+b. Survival Rate by Fare Paid
+
+# Divide fare into bins to categorize passengers based on fare range
+fare_bins = [0, 10, 30, 100, 600]
+fare_labels = ['Low', 'Medium', 'High', 'Very High']
+
+data['FareGroup'] = pd.cut(data['Fare'], bins=fare_bins, labels=fare_labels)
+
+# Survival rate by fare group
+survival_by_fare_group = data.groupby('FareGroup')['Survived'].mean()
+print(survival_by_fare_group)
+This analyzes whether passengers who paid higher fares had higher survival rates.
+
+c. Survival Rate by Embarkation Port
+
+# Survival rate by embarkation port
+survival_by_embarked = data.groupby('Embarked')['Survived'].mean()
+print(survival_by_embarked)
+This looks at survival rates based on the embarkation port (Cherbourg, Queenstown, or Southampton).
