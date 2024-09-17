@@ -1,0 +1,105 @@
+import pandas as pd
+
+# Load the Excel file
+file_path = r'C:\Users\User\Documents\My Tableau Repository\cinemaTicket_Ref.xls'
+data = pd.read_excel(file_path)
+
+# Display the first few rows of the DataFrame
+data.head()
+
+  # Check the structure and data types
+print(data.info())
+
+# Summary statistics
+print(data.describe())
+
+# Check for missing values
+print(data.isnull().sum())
+
+  # Example: Dropping rows with missing values (if any)
+data = data.dropna()
+
+# Example: Resetting index if rows are dropped
+data.reset_index(drop=True, inplace=True)
+
+  total_sales_by_cinema = data.groupby('cinema_code')['total_sales'].sum()
+print(total_sales_by_cinema)
+average_ticket_price = data['ticket_price'].mean()
+print(f'Average Ticket Price: {average_ticket_price}')
+
+
+  import matplotlib.pyplot as plt
+
+# Plot occupancy percentage distribution
+plt.figure(figsize=(10, 6))
+plt.hist(data['occu_perc'], bins=20, edgecolor='black')
+plt.title('Distribution of Occupancy Percentage')
+plt.xlabel('Occupancy Percentage')
+plt.ylabel('Frequency')
+plt.show()
+# Convert 'date' column to datetime format
+data['date'] = pd.to_datetime(data['date'], format='%d-%m-%Y')
+
+# Group by month and calculate total sales
+monthly_sales = data.resample('M', on='date')['total_sales'].sum()
+
+# Plot monthly sales
+plt.figure(figsize=(12, 6))
+monthly_sales.plot()
+plt.title('Monthly Total Sales')
+plt.xlabel('Date')
+plt.ylabel('Total Sales')
+plt.grid(True)
+plt.show()
+
+import seaborn as sns
+
+# Group by film and calculate total sales
+sales_by_film = data.groupby('film_code')['total_sales'].sum().reset_index()
+
+# Plot total sales by film
+plt.figure(figsize=(12, 6))
+sns.barplot(x='film_code', y='total_sales', data=sales_by_film)
+plt.title('Total Sales by Film')
+plt.xlabel('Film Code')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.show()
+
+# Group by cinema and calculate total tickets sold
+tickets_sold_by_cinema = data.groupby('cinema_code')['tickets_sold'].sum().reset_index()
+
+# Plot tickets sold by cinema
+plt.figure(figsize=(12, 6))
+sns.barplot(x='cinema_code', y='tickets_sold', data=tickets_sold_by_cinema)
+plt.title('Tickets Sold by Cinema')
+plt.xlabel('Cinema Code')
+plt.ylabel('Tickets Sold')
+plt.xticks(rotation=45)
+plt.show()
+# Plot distribution of ticket prices
+plt.figure(figsize=(10, 6))
+sns.histplot(data['ticket_price'], bins=20, kde=True)
+plt.title('Distribution of Ticket Prices')
+plt.xlabel('Ticket Price')
+plt.ylabel('Frequency')
+plt.show()
+
+# Scatter plot of occupancy percentage vs. ticket price
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='ticket_price', y='occu_perc', data=data)
+plt.title('Occupancy Percentage vs. Ticket Price')
+plt.xlabel('Ticket Price')
+plt.ylabel('Occupancy Percentage')
+plt.show()
+# Group by month and calculate total sales
+monthly_sales = data.resample('M', on='date')['total_sales'].sum()
+
+# Plot monthly sales trend
+plt.figure(figsize=(12, 6))
+monthly_sales.plot(marker='o')
+plt.title('Monthly Total Sales Trend')
+plt.xlabel('Date')
+plt.ylabel('Total Sales')
+plt.grid(True)
+plt.show()
